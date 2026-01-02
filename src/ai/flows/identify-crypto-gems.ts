@@ -232,7 +232,7 @@ const identifyCryptoGemsFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await identifyCryptoGemsPrompt(input);
-    if (!output) {
+    if (!output || !output.gems) {
       return {
         gems: [],
       };
@@ -240,3 +240,5 @@ const identifyCryptoGemsFlow = ai.defineFlow(
     return output;
   }
 );
+
+    

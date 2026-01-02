@@ -190,7 +190,7 @@ export function GemDiscoveryClient() {
                     <FormLabel>24h Inflow (USD)</FormLabel>
                     <FormControl>
                        <Slider
-                        min={1000}
+                        min={10000}
                         max={10000000}
                         step={1000}
                         value={field.value}
@@ -325,3 +325,5 @@ export function GemDiscoveryClient() {
     </div>
   );
 }
+
+    
