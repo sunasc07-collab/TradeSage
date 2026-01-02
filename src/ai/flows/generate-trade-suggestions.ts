@@ -100,54 +100,47 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
     outputSchema: GenerateTradeSuggestionsOutputSchema,
   },
   async () => {
-    const { output } = await generateTradeSuggestionsPrompt();
-    
-    // Handle cases where the model might return null or an empty suggestions array.
-    if (!output || output.suggestions.length === 0) {
-      // Return a default set of high-quality suggestions for demonstration purposes.
-      // In a real-world scenario, you might return an empty array or handle this case differently.
-      return {
-          suggestions: [
-              {
-                  asset: 'GEM-X/USD',
-                  iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/gem.svg',
-                  signal: 'Strong Buy',
-                  confidence: '98%',
-                  strategy: 'Breakout',
-                  entry: '$0.005',
-                  stopLoss: '$0.004',
-                  takeProfit: '$0.50',
-                  blockchain: 'Solana',
-                  timeframe: '1 Week'
-              },
-              {
-                  asset: 'MOON-Y/USD',
-                  iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/moon.svg',
-                  signal: 'Strong Buy',
-                  confidence: '96%',
-                  strategy: 'Momentum',
-                  entry: '$0.012',
-                  stopLoss: '$0.009',
-                  takeProfit: '$1.10',
-                  blockchain: 'Ethereum',
-                  timeframe: '1 Week'
-              },
-               {
-                  asset: 'WEB3-Z/USD',
-                  iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/web.svg',
-                  signal: 'Strong Buy',
-                  confidence: '95%',
-                  strategy: 'DeFi Yield',
-                  entry: '$0.025',
-                  stopLoss: '$0.018',
-                  takeProfit: '$2.50',
-                  blockchain: 'Base',
-                  timeframe: '1 Week'
-              },
-          ]
-      };
-    }
-    
-    return output;
+    // NOTE: To prevent rate-limiting errors during development, this flow
+    // returns hardcoded data instead of making a live call to the AI model.
+    return {
+        suggestions: [
+            {
+                asset: 'GEM-X/USD',
+                iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/gem.svg',
+                signal: 'Strong Buy',
+                confidence: '98%',
+                strategy: 'Breakout',
+                entry: '$0.005',
+                stopLoss: '$0.004',
+                takeProfit: '$0.50',
+                blockchain: 'Solana',
+                timeframe: '1 Week'
+            },
+            {
+                asset: 'MOON-Y/USD',
+                iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/moon.svg',
+                signal: 'Strong Buy',
+                confidence: '96%',
+                strategy: 'Momentum',
+                entry: '$0.012',
+                stopLoss: '$0.009',
+                takeProfit: '$1.10',
+                blockchain: 'Ethereum',
+                timeframe: '1 Week'
+            },
+             {
+                asset: 'WEB3-Z/USD',
+                iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/web.svg',
+                signal: 'Strong Buy',
+                confidence: '95%',
+                strategy: 'DeFi Yield',
+                entry: '$0.025',
+                stopLoss: '$0.018',
+                takeProfit: '$2.50',
+                blockchain: 'Base',
+                timeframe: '1 Week'
+            },
+        ]
+    };
   }
 );
