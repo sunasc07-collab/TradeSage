@@ -72,7 +72,7 @@ const WalletAssetTable = ({ assets }: { assets: typeof demoWalletAssets }) => (
             </div>
           </TableCell>
           <TableCell className="font-code">{asset.balance}</TableCell>
-          <TableCell className="text-right font-code">{asset.value}</TableCell>
+          <TableCell className="text-right font-code">{`$${parseFloat(asset.value.replace(/[^0-9.-]+/g, '')).toLocaleString()}`}</TableCell>
           <TableCell
             className={cn(
               'text-right font-code',
