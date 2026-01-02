@@ -29,18 +29,72 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+type Wallet = {
+  name: string;
+  downloadUrl: string;
+  isProvider: boolean;
+};
+
+const wallets: Record<string, Wallet> = {
+  MetaMask: {
+    name: 'MetaMask',
+    downloadUrl: 'https://metamask.io/download/',
+    isProvider: typeof window !== 'undefined' && !!(window as any).ethereum,
+  },
+  'Trust Wallet': {
+    name: 'Trust Wallet',
+    downloadUrl: 'https://trustwallet.com/download',
+    isProvider: false, // More complex to detect, assuming not present for this simulation
+  },
+  WalletConnect: {
+    name: 'WalletConnect',
+    downloadUrl: 'https://walletconnect.com/explorer',
+    isProvider: false, // This is a protocol, not a direct provider
+  },
+  'Coinbase Wallet': {
+    name: 'Coinbase Wallet',
+    downloadUrl: 'https://www.coinbase.com/wallet/downloads',
+    isProvider: false, // Can also use window.ethereum
+  },
+  Ledger: {
+    name: 'Ledger',
+    downloadUrl: 'https://www.ledger.com/ledger-live',
+    isProvider: false, // Hardware wallet, different integration
+  },
+};
+
 export default function TradingPage() {
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleConnect = () => {
-    if (selectedWallet) {
-      setConnectedWallet(selectedWallet);
-      toast({
-        title: "Wallet Connected",
-        description: `You are now connected with ${selectedWallet}.`,
-      });
+    if (!selectedWallet) return;
+
+    const walletInfo = wallets[selectedWallet];
+
+    if (walletInfo) {
+      if (walletInfo.name === 'MetaMask' && (window as any).ethereum) {
+        // In a real app, you would initiate the connection request here.
+        // For example: `await (window as any).ethereum.request({ method: 'eth_requestAccounts' });`
+        setConnectedWallet(selectedWallet);
+        toast({
+          title: "Wallet Connected",
+          description: `You are now connected with ${selectedWallet}.`,
+        });
+      } else {
+        setConnectedWallet(null);
+        toast({
+          variant: "destructive",
+          title: `${walletInfo.name} Not Found`,
+          description: `Please install the ${walletInfo.name} extension to connect.`,
+          action: (
+            <a href={walletInfo.downloadUrl} target="_blank" rel="noopener noreferrer">
+              <Button variant="secondary" size="sm">Download</Button>
+            </a>
+          ),
+        });
+      }
     }
   };
 
@@ -129,11 +183,9 @@ export default function TradingPage() {
                       <SelectValue placeholder="Select Wallet" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="MetaMask">MetaMask</SelectItem>
-                      <SelectItem value="Trust Wallet">Trust Wallet</SelectItem>
-                      <SelectItem value="WalletConnect">WalletConnect</SelectItem>
-                      <SelectItem value="Coinbase Wallet">Coinbase Wallet</SelectItem>
-                      <SelectItem value="Ledger">Ledger</SelectItem>
+                      {Object.values(wallets).map(wallet => (
+                        <SelectItem key={wallet.name} value={wallet.name}>{wallet.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <Button onClick={handleConnect} disabled={!selectedWallet}>Connect</Button>
