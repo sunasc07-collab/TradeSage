@@ -231,14 +231,35 @@ const identifyCryptoGemsFlow = ai.defineFlow(
     outputSchema: IdentifyCryptoGemsOutputSchema,
   },
   async input => {
-    const {output} = await identifyCryptoGemsPrompt(input);
-    if (!output || !output.gems) {
-      return {
-        gems: [],
-      };
-    }
-    return output;
+    // NOTE: To prevent rate-limiting errors during development, this flow
+    // returns hardcoded data instead of making a live call to the AI model.
+    return {
+      gems: [
+        {
+          name: "QuantumLeap",
+          symbol: "QTL",
+          blockchain: "Solana",
+          potential: "50x-100x",
+          risk: "High",
+          summary: "QuantumLeap is a new decentralized AI project on Solana with a low market cap and high social media buzz. The team is anonymous, but on-chain data shows strong initial holder distribution and rapidly growing volume. Altfins analysis indicates a bullish flag pattern forming, though TradingView signal is neutral. DeFiLlama shows a small but fast-growing TVL."
+        },
+        {
+          name: "BaseChain OG",
+          symbol: "BOG",
+          blockchain: "Base",
+          potential: "20x",
+          risk: "Medium",
+          summary: "An established meme coin on Base that is showing renewed interest. Community engagement is strongly positive, and CoinGecko scores for social and community are high. Project fundamentals are weak (it's a meme coin), but on-chain data shows significant recent inflow from large wallets. Risk is medium due to the volatile nature of meme coins."
+        },
+        {
+            name: "EtherRift",
+            symbol: "ERF",
+            blockchain: "Ethereum",
+            potential: "10x-15x",
+            risk: "Medium",
+            summary: "A Layer-2 scaling solution for Ethereum gaining traction. The team has a strong reputation, and the project has solid fundamentals with clear tokenomics. TradingView signal is a 'Buy' on the 1D timeframe. The main risk is the high competition in the L2 space, but its unique technology gives it a potential edge."
+        }
+      ]
+    };
   }
 );
-
-    
