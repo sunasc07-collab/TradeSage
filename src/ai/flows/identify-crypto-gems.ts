@@ -122,7 +122,7 @@ const identifyCryptoGemsPrompt = ai.definePrompt({
   2.  Use the getProjectFundamentals tool to analyze its whitepaper, team, and tokenomics.
   3.  Use the getCommunityEngagement tool to gauge social media sentiment and buzz.
 
-  Synthesize the information from all tools to provide a detailed analysis and risk assessment for each gem you identify.
+  Synthesize the information from all tools to provide a detailed analysis and risk assessment for each gem you identify. If no gems are found, return an empty gems array and an analysis stating that no gems were found.
 
   User Criteria: {{{prompt}}}
 
@@ -138,6 +138,12 @@ const identifyCryptoGemsFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await identifyCryptoGemsPrompt(input);
-    return output!;
+    if (!output) {
+      return {
+        gems: [],
+        analysis: "The AI model did not return a valid analysis. This may be a temporary issue. Please try again.",
+      };
+    }
+    return output;
   }
 );
