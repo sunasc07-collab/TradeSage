@@ -36,6 +36,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { WalletContext } from "@/context/wallet-context";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 type Wallet = {
   name: string;
@@ -79,6 +81,9 @@ export default function TradingPage() {
   const [tradeSuggestions, setTradeSuggestions] = useState<TradeSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
   const [tradingAccount, setTradingAccount] = useState<'demo' | 'real'>('demo');
+  const [tradeToExecute, setTradeToExecute] = useState<TradeSuggestion | null>(null);
+  const [tradeAmount, setTradeAmount] = useState<number>(100);
+  const [isExecuteDialogOpen, setIsExecuteDialogOpen] = useState(false);
   const { toast } = useToast();
   const walletContext = useContext(WalletContext);
 
@@ -161,23 +166,33 @@ export default function TradingPage() {
     });
   };
 
-  const handleExecute = (trade: TradeSuggestion) => {
+  const handleExecuteClick = (trade: TradeSuggestion) => {
     if (tradingAccount === 'real' && !connectedWallet) {
-        toast({
-            variant: "destructive",
-            title: "Wallet Not Connected",
-            description: "Please connect your wallet to execute trades with your real account.",
-        });
-        return;
+      toast({
+        variant: 'destructive',
+        title: 'Wallet Not Connected',
+        description: 'Please connect your wallet to execute trades with your real account.',
+      });
+      return;
     }
-    
+    setTradeToExecute(trade);
+    setIsExecuteDialogOpen(true);
+  };
+
+  const handleConfirmExecute = () => {
+    if (!tradeToExecute) return;
+
     // Add the asset to the wallet context
-    addAsset(tradingAccount, trade);
+    addAsset(tradingAccount, tradeToExecute, tradeAmount);
 
     toast({
         title: "Trade Executed!",
-        description: `Your order to ${trade.signal} ${trade.asset} has been placed using your ${tradingAccount} account.`,
+        description: `Your order to ${tradeToExecute.signal} ${tradeToExecute.asset} for $${tradeAmount} has been placed using your ${tradingAccount} account.`,
     });
+
+    setIsExecuteDialogOpen(false);
+    setTradeToExecute(null);
+    setTradeAmount(100); // Reset for next trade
   }
 
 
@@ -269,7 +284,7 @@ export default function TradingPage() {
                             <Button variant="outline" size="sm" onClick={() => handleDismiss(trade.asset)}>
                               Dismiss
                             </Button>
-                            <Button size="sm" onClick={() => handleExecute(trade)}>Execute</Button>
+                            <Button size="sm" onClick={() => handleExecuteClick(trade)}>Execute</Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -314,6 +329,33 @@ export default function TradingPage() {
           </Card>
         </div>
       </div>
+      <Dialog open={isExecuteDialogOpen} onOpenChange={setIsExecuteDialogOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Execute Trade: {tradeToExecute?.asset}</DialogTitle>
+                <DialogDescription>
+                    Enter the amount you wish to trade.
+                </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="amount" className="text-right">Amount (USD)</Label>
+                    <Input
+                        id="amount"
+                        type="number"
+                        value={tradeAmount}
+                        onChange={(e) => setTradeAmount(Math.max(1, parseFloat(e.target.value) || 1))}
+                        className="col-span-3"
+                        min="1"
+                    />
+                </div>
+            </div>
+            <DialogFooter>
+                <Button variant="outline" onClick={() => setIsExecuteDialogOpen(false)}>Cancel</Button>
+                <Button onClick={handleConfirmExecute}>Confirm Trade</Button>
+            </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
