@@ -73,8 +73,8 @@ export function GemDiscoveryClient() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      marketCap: [100000, 50000000],
-      tradingVolume: [50000, 1000000],
+      marketCap: [1000, 50000000],
+      tradingVolume: [50000, 10000000],
       inflow: [10000, 500000],
       blockchains: ["solana", "base"],
     },
@@ -129,9 +129,9 @@ export function GemDiscoveryClient() {
                     <FormLabel>Market Cap (USD)</FormLabel>
                     <FormControl>
                        <Slider
-                        min={10000}
+                        min={1000}
                         max={100000000}
-                        step={10000}
+                        step={1000}
                         value={field.value}
                         onValueChange={field.onChange}
                       />
@@ -153,7 +153,7 @@ export function GemDiscoveryClient() {
                      <FormControl>
                       <Slider
                         min={10000}
-                        max={5000000}
+                        max={10000000}
                         step={10000}
                         value={field.value}
                         onValueChange={field.onChange}
