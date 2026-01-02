@@ -25,11 +25,15 @@ const getMarketData = ai.defineTool(
     }),
   },
   async ({coin}) => {
-    // In a real app, you'd fetch this from a crypto API
+    // In a real app, you'd fetch this from a crypto API like CoinGecko or CoinMarketCap.
+    // This simulation provides more realistic-looking data.
+    const price = Math.random() * 500 + 0.01; // Price between $0.01 and $500
+    const marketCap = price * (Math.random() * 5e8 + 1e7); // Market cap based on price
+    const volume24h = marketCap * (Math.random() * 0.2 + 0.05); // 24h volume is 5-20% of market cap
     return {
-      price: Math.random() * 100,
-      marketCap: Math.random() * 1e9,
-      volume24h: Math.random() * 1e7,
+      price,
+      marketCap,
+      volume24h,
     };
   }
 );
