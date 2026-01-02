@@ -116,7 +116,7 @@ export const tradeSuggestions = [
 ];
 
 
-export const walletAssets = [
+export const demoWalletAssets = [
   {
     asset: "Bitcoin",
     ticker: "BTC",
@@ -168,3 +168,36 @@ export const walletAssets = [
     changeType: "neutral",
   },
 ];
+
+export const realWalletAssets = [
+    {
+      asset: "Bitcoin",
+      ticker: "BTC",
+      icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/btc.svg',
+      balance: "0.15",
+      value: "$10,406.98",
+      allocation: "50%",
+      change: "+2.1%",
+      changeType: "increase",
+    },
+    {
+      asset: "Ethereum",
+      ticker: "ETH",
+      icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/eth.svg',
+      balance: "2.5",
+      value: "$8,502.43",
+      allocation: "40%",
+      change: "-1.2%",
+      changeType: "decrease",
+    },
+    {
+      asset: "USDT",
+      ticker: "USDT",
+      icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/usdt.svg',
+      balance: "2,081.39",
+      value: "$2,081.39",
+      allocation: "10%",
+      change: "0.0%",
+      changeType: "neutral",
+    },
+  ];

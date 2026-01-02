@@ -29,8 +29,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { walletAssets } from '@/lib/data';
+import { demoWalletAssets, realWalletAssets } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import {
   ArrowDown,
@@ -40,25 +41,79 @@ import {
   ClipboardCheck,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+const WalletAssetTable = ({ assets }: { assets: typeof demoWalletAssets }) => (
+  <Table>
+    <TableHeader>
+      <TableRow>
+        <TableHead>Asset</TableHead>
+        <TableHead>Balance</TableHead>
+        <TableHead className="text-right">Value (USD)</TableHead>
+        <TableHead className="text-right">24h Change</TableHead>
+        <TableHead className="text-right">Allocation</TableHead>
+      </TableRow>
+    </TableHeader>
+    <TableBody>
+      {assets.map((asset) => (
+        <TableRow key={asset.ticker}>
+          <TableCell>
+            <div className="flex items-center gap-3">
+              <Avatar className="h-8 w-8">
+                <AvatarImage src={asset.icon} alt={asset.asset} />
+                <AvatarFallback>{asset.ticker.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium">{asset.asset}</div>
+                <div className="text-sm text-muted-foreground">
+                  {asset.ticker}
+                </div>
+              </div>
+            </div>
+          </TableCell>
+          <TableCell className="font-code">{asset.balance}</TableCell>
+          <TableCell className="text-right font-code">{asset.value}</TableCell>
+          <TableCell
+            className={cn(
+              'text-right font-code',
+              asset.changeType === 'increase'
+                ? 'text-green-400'
+                : 'text-red-400'
+            )}
+          >
+            {asset.change}
+          </TableCell>
+          <TableCell className="text-right">{asset.allocation}</TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+);
 
 export default function WalletPage() {
   const { toast } = useToast();
   const [hasCopied, setHasCopied] = useState(false);
   const receiveAddress = '0x1aB2c3d4e5f6A7B8C9d0E1F2a3B4c5D6e7F8g9H0';
 
-  const totalBalance = walletAssets.reduce((acc, asset) => {
+  const demoTotalBalance = useMemo(() => demoWalletAssets.reduce((acc, asset) => {
     return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
-  }, 0);
+  }, 0), []);
+  
+  const realTotalBalance = useMemo(() => realWalletAssets.reduce((acc, asset) => {
+    return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
+  }, 0), []);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(receiveAddress).then(() => {
       setHasCopied(true);
-      toast({ title: 'Address Copied!', description: 'USDT address has been copied to your clipboard.' });
+      toast({
+        title: 'Address Copied!',
+        description: 'USDT address has been copied to your clipboard.',
+      });
       setTimeout(() => setHasCopied(false), 2000);
     });
   };
-  
+
   const handleSend = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -70,7 +125,6 @@ export default function WalletPage() {
     });
     // Close dialog after submission - requires managing dialog open state
   };
-
 
   return (
     <div className="flex flex-col gap-8">
@@ -173,99 +227,106 @@ export default function WalletPage() {
           </Dialog>
         </div>
       </PageHeader>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>Total Balance</CardTitle>
-            <CardDescription>
-              The total value of all assets in your wallet.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold font-headline">
-              {totalBalance.toLocaleString('en-US', {
-                style: 'currency',
-                currency: 'USD',
-              })}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>24h Performance</CardTitle>
-            <CardDescription>
-              Your portfolio&apos;s performance over the last day.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-baseline gap-2 text-4xl font-bold font-headline text-green-400">
-              +$1,204.58
-              <span className="flex items-center gap-1 text-lg text-green-400">
-                <ArrowUpRight className="h-5 w-5" />
-                +1.8%
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Assets</CardTitle>
-          <CardDescription>A list of all assets in your wallet.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Asset</TableHead>
-                <TableHead>Balance</TableHead>
-                <TableHead className="text-right">Value (USD)</TableHead>
-                <TableHead className="text-right">24h Change</TableHead>
-                <TableHead className="text-right">Allocation</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {walletAssets.map((asset) => (
-                <TableRow key={asset.ticker}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={asset.icon} alt={asset.asset} />
-                        <AvatarFallback>
-                          {asset.ticker.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{asset.asset}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {asset.ticker}
-                        </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-code">{asset.balance}</TableCell>
-                  <TableCell className="text-right font-code">
-                    {asset.value}
-                  </TableCell>
-                  <TableCell
-                    className={cn(
-                      'text-right font-code',
-                      asset.changeType === 'increase'
-                        ? 'text-green-400'
-                        : 'text-red-400'
-                    )}
-                  >
-                    {asset.change}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {asset.allocation}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="demo" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="demo">Demo Account</TabsTrigger>
+          <TabsTrigger value="real">Real Account</TabsTrigger>
+        </TabsList>
+        <TabsContent value="demo" className="mt-4 space-y-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Total Balance (Demo)</CardTitle>
+                <CardDescription>
+                  The total value of all assets in your demo wallet.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold font-headline">
+                  {demoTotalBalance.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>24h Performance</CardTitle>
+                <CardDescription>
+                  Your portfolio&apos;s performance over the last day.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2 text-4xl font-bold font-headline text-green-400">
+                  +$1,204.58
+                  <span className="flex items-center gap-1 text-lg text-green-400">
+                    <ArrowUpRight className="h-5 w-5" />
+                    +1.8%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Demo Assets</CardTitle>
+              <CardDescription>A list of all assets in your demo wallet.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <WalletAssetTable assets={demoWalletAssets} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="real" className="mt-4 space-y-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>Total Balance (Real)</CardTitle>
+                <CardDescription>
+                  The total value of all assets in your real wallet.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-4xl font-bold font-headline">
+                  {realTotalBalance.toLocaleString('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>24h Performance</CardTitle>
+                <CardDescription>
+                  Your portfolio&apos;s performance over the last day.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-baseline gap-2 text-4xl font-bold font-headline text-red-400">
+                  -$251.32
+                  <span className="flex items-center gap-1 text-lg text-red-400">
+                    <ArrowDown className="h-5 w-5" />
+                    -1.2%
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Real Assets</CardTitle>
+              <CardDescription>
+                A list of all assets in your real wallet.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <WalletAssetTable assets={realWalletAssets} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
