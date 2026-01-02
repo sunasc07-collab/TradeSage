@@ -75,7 +75,7 @@ export function GemDiscoveryClient() {
     defaultValues: {
       marketCap: [1000, 50000000],
       tradingVolume: [50000, 10000000],
-      inflow: [10000, 500000],
+      inflow: [10000, 10000000],
       blockchains: ["solana", "base"],
     },
   });
