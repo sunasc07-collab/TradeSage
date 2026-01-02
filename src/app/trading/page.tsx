@@ -1,3 +1,5 @@
+'use client';
+
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +26,34 @@ import {
 } from "@/components/ui/table";
 import { tradeSuggestions } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TradingPage() {
+  const [selectedWallet, setSelectedWallet] = useState<string>('');
+  const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const handleConnect = () => {
+    if (selectedWallet) {
+      setConnectedWallet(selectedWallet);
+      toast({
+        title: "Wallet Connected",
+        description: `You are now connected with ${selectedWallet}.`,
+      });
+    }
+  };
+
+  const handleDisconnect = () => {
+    toast({
+      title: "Wallet Disconnected",
+      description: `You have disconnected from ${connectedWallet}.`,
+    });
+    setConnectedWallet(null);
+    setSelectedWallet('');
+  };
+
+
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
@@ -88,23 +116,34 @@ export default function TradingPage() {
         <div className="lg:col-span-3">
           <Card>
             <CardHeader>
-              <CardTitle>Exchange Integration</CardTitle>
+              <CardTitle>Wallet Integration</CardTitle>
               <CardDescription>
-                Connect to your favorite exchanges to enable automated trading.
+                Connect to your favorite Web3 wallets to enable automated trading.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-4 sm:flex-row">
-              <Select>
-                <SelectTrigger className="w-full sm:w-[240px]">
-                  <SelectValue placeholder="Select Exchange" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="binance">Binance</SelectItem>
-                  <SelectItem value="coinbase">Coinbase</SelectItem>
-                  <SelectItem value="kraken">Kraken</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button>Connect</Button>
+              {!connectedWallet ? (
+                <>
+                  <Select onValueChange={setSelectedWallet} value={selectedWallet}>
+                    <SelectTrigger className="w-full sm:w-[240px]">
+                      <SelectValue placeholder="Select Wallet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="MetaMask">MetaMask</SelectItem>
+                      <SelectItem value="Trust Wallet">Trust Wallet</SelectItem>
+                      <SelectItem value="WalletConnect">WalletConnect</SelectItem>
+                      <SelectItem value="Coinbase Wallet">Coinbase Wallet</SelectItem>
+                      <SelectItem value="Ledger">Ledger</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={handleConnect} disabled={!selectedWallet}>Connect</Button>
+                </>
+              ) : (
+                <div className="flex w-full items-center justify-between">
+                  <p className="text-sm">Connected with <span className="font-semibold">{connectedWallet}</span></p>
+                  <Button variant="destructive" onClick={handleDisconnect}>Disconnect</Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
