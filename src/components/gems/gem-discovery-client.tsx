@@ -109,6 +109,21 @@ export function GemDiscoveryClient() {
     }
   }
 
+  const getRiskBadgeVariant = (risk: string) => {
+    switch (risk) {
+      case 'Low':
+        return 'default';
+      case 'Medium':
+        return 'secondary';
+      case 'High':
+        return 'destructive';
+      case 'Very High':
+        return 'destructive';
+      default:
+        return 'outline';
+    }
+  }
+
   return (
     <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <Card>
@@ -269,7 +284,7 @@ export function GemDiscoveryClient() {
               <Skeleton className="h-10 w-full" />
             </div>
           )}
-          {!isLoading && !result && (
+          {!isLoading && (!result || result.gems.length === 0) && (
             <div className="flex h-full min-h-[200px] flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card-foreground/5 p-8 text-center">
               <Gem className="h-10 w-10 text-muted-foreground" />
               <p className="mt-4 text-muted-foreground">
@@ -277,21 +292,32 @@ export function GemDiscoveryClient() {
               </p>
             </div>
           )}
-          {result && (
-            <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="analysis">
-                  <AccordionTrigger className="font-headline text-lg">
-                    Detailed Analysis
-                  </AccordionTrigger>
-                  <AccordionContent className="prose prose-invert max-w-none text-muted-foreground">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {result.gems.map((gem, index) => (
-                            <Badge key={index} variant="secondary">{gem}</Badge>
-                        ))}
-                    </div>
-                    <p>{result.analysis}</p>
-                  </AccordionContent>
-                </AccordionItem>
+          {result && result.gems.length > 0 && (
+            <Accordion type="single" collapsible className="w-full" defaultValue="gem-0">
+                {result.gems.map((gem, index) => (
+                  <AccordionItem value={`gem-${index}`} key={index}>
+                    <AccordionTrigger className="font-headline text-lg">
+                      {gem.name} ({gem.symbol})
+                    </AccordionTrigger>
+                    <AccordionContent className="space-y-4">
+                      <p className="text-muted-foreground">{gem.summary}</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="space-y-1">
+                          <p className="font-medium">Blockchain</p>
+                          <Badge variant="outline">{gem.blockchain}</Badge>
+                        </div>
+                         <div className="space-y-1">
+                          <p className="font-medium">Growth Potential</p>
+                          <Badge variant="secondary">{gem.potential}</Badge>
+                        </div>
+                        <div className="space-y-1">
+                          <p className="font-medium">Risk Level</p>
+                          <Badge variant={getRiskBadgeVariant(gem.risk)}>{gem.risk}</Badge>
+                        </div>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
             </Accordion>
           )}
         </CardContent>
@@ -299,5 +325,3 @@ export function GemDiscoveryClient() {
     </div>
   );
 }
-
-    

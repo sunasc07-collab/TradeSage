@@ -175,16 +175,21 @@ const IdentifyCryptoGemsInputSchema = z.object({
 });
 export type IdentifyCryptoGemsInput = z.infer<typeof IdentifyCryptoGemsInputSchema>;
 
+const GemAnalysisSchema = z.object({
+  name: z.string().describe("The name of the cryptocurrency gem."),
+  symbol: z.string().describe("The token's ticker symbol."),
+  blockchain: z.string().describe("The blockchain the gem is on."),
+  potential: z.string().describe("Estimated growth potential (e.g., 10x, 100x)."),
+  risk: z.enum(["Low", "Medium", "High", "Very High"]).describe("Assessed risk level."),
+  summary: z.string().describe("A concise summary of the analysis, synthesizing all data points from the tools used."),
+});
+
+
 const IdentifyCryptoGemsOutputSchema = z.object({
   gems: z
-    .array(z.string())
+    .array(GemAnalysisSchema)
     .describe(
-      'An array of cryptocurrency gems that match the criteria specified in the prompt.'
-    ),
-  analysis: z
-    .string()
-    .describe(
-      'A detailed analysis of each identified gem, including blockchain data, social media activity, project fundamentals, and risk assessment.'
+      'An array of cryptocurrency gems that match the criteria specified in the prompt, each with its own detailed analysis.'
     ),
 });
 export type IdentifyCryptoGemsOutput = z.infer<typeof IdentifyCryptoGemsOutputSchema>;
@@ -209,11 +214,13 @@ const identifyCryptoGemsPrompt = ai.definePrompt({
   6.  Use getTradingViewSignal to get a real-time trading signal.
   7.  If it's a DeFi project, use getDeFiLlamaTVL to check its Total Value Locked.
 
-  Synthesize the information from ALL tools to provide a detailed analysis and risk assessment for each gem you identify. If no gems are found that meet the criteria, return an empty gems array and an analysis stating that no gems were found.
+  Synthesize the information from ALL tools to provide a detailed analysis for each gem you identify. For each gem, provide its name, symbol, blockchain, estimated growth potential, risk level, and a summary of your findings.
+  
+  If no gems are found that meet the criteria, return an empty gems array.
 
   User Criteria: {{{prompt}}}
 
-  Present your findings in a well-structured format. Your analysis must be thorough, critical, and provide actionable insights. Do not just list the data; interpret it.
+  Present your findings as a list of gem analysis objects.
   `,
 });
 
@@ -228,7 +235,6 @@ const identifyCryptoGemsFlow = ai.defineFlow(
     if (!output) {
       return {
         gems: [],
-        analysis: "The AI model did not return a valid analysis. This may be a temporary issue. Please try again.",
       };
     }
     return output;
