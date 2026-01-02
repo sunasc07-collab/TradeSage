@@ -25,7 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import {
@@ -35,6 +35,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { WalletContext } from "@/context/wallet-context";
 
 type Wallet = {
   name: string;
@@ -79,6 +80,12 @@ export default function TradingPage() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
   const [tradingAccount, setTradingAccount] = useState<'demo' | 'real'>('demo');
   const { toast } = useToast();
+  const walletContext = useContext(WalletContext);
+
+  if (!walletContext) {
+    throw new Error('WalletContext must be used within a WalletProvider');
+  }
+  const { addAsset } = walletContext;
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -163,6 +170,10 @@ export default function TradingPage() {
         });
         return;
     }
+    
+    // Add the asset to the wallet context
+    addAsset(tradingAccount, trade);
+
     toast({
         title: "Trade Executed!",
         description: `Your order to ${trade.signal} ${trade.asset} has been placed using your ${tradingAccount} account.`,

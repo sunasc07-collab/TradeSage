@@ -30,8 +30,8 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { WalletContext, WalletAsset } from '@/context/wallet-context';
 import { useToast } from '@/hooks/use-toast';
-import { demoWalletAssets, realWalletAssets } from '@/lib/data';
 import { cn } from '@/lib/utils';
 import {
   ArrowDown,
@@ -41,67 +41,83 @@ import {
   ClipboardCheck,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 
-const WalletAssetTable = ({ assets }: { assets: typeof demoWalletAssets }) => (
-  <Table>
-    <TableHeader>
-      <TableRow>
-        <TableHead>Asset</TableHead>
-        <TableHead>Balance</TableHead>
-        <TableHead className="text-right">Value (USD)</TableHead>
-        <TableHead className="text-right">24h Change</TableHead>
-        <TableHead className="text-right">Allocation</TableHead>
-      </TableRow>
-    </TableHeader>
-    <TableBody>
-      {assets.map((asset) => (
-        <TableRow key={asset.ticker}>
-          <TableCell>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-8 w-8">
-                <AvatarImage src={asset.icon} alt={asset.asset} />
-                <AvatarFallback>{asset.ticker.charAt(0)}</AvatarFallback>
-              </Avatar>
-              <div>
-                <div className="font-medium">{asset.asset}</div>
-                <div className="text-sm text-muted-foreground">
-                  {asset.ticker}
+const WalletAssetTable = ({ assets }: { assets: WalletAsset[] }) => {
+  if (assets.length === 0) {
+    return (
+      <div className="flex items-center justify-center rounded-lg border border-dashed p-8 text-center text-muted-foreground">
+        No assets in this wallet yet. Execute a trade to see your assets here.
+      </div>
+    )
+  }
+  return (
+    <Table>
+      <TableHeader>
+        <TableRow>
+          <TableHead>Asset</TableHead>
+          <TableHead>Balance</TableHead>
+          <TableHead className="text-right">Value (USD)</TableHead>
+          <TableHead className="text-right">24h Change</TableHead>
+          <TableHead className="text-right">Allocation</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {assets.map((asset) => (
+          <TableRow key={asset.ticker}>
+            <TableCell>
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={asset.icon} alt={asset.asset} />
+                  <AvatarFallback>{asset.ticker.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <div className="font-medium">{asset.asset}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {asset.ticker}
+                  </div>
                 </div>
               </div>
-            </div>
-          </TableCell>
-          <TableCell className="font-code">{asset.balance}</TableCell>
-          <TableCell className="text-right font-code">{`$${parseFloat(asset.value.replace(/[^0-9.-]+/g, '')).toLocaleString()}`}</TableCell>
-          <TableCell
-            className={cn(
-              'text-right font-code',
-              asset.changeType === 'increase'
-                ? 'text-green-400'
-                : 'text-red-400'
-            )}
-          >
-            {asset.change}
-          </TableCell>
-          <TableCell className="text-right">{asset.allocation}</TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-);
+            </TableCell>
+            <TableCell className="font-code">{asset.balance}</TableCell>
+            <TableCell className="text-right font-code">{`$${parseFloat(asset.value.replace(/[^0-9.-]+/g, '')).toLocaleString()}`}</TableCell>
+            <TableCell
+              className={cn(
+                'text-right font-code',
+                asset.changeType === 'increase'
+                  ? 'text-green-400'
+                  : 'text-red-400'
+              )}
+            >
+              {asset.change}
+            </TableCell>
+            <TableCell className="text-right">{asset.allocation}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
+  )
+};
 
 export default function WalletPage() {
   const { toast } = useToast();
   const [hasCopied, setHasCopied] = useState(false);
   const receiveAddress = '0x1aB2c3d4e5f6A7B8C9d0E1F2a3B4c5D6e7F8g9H0';
 
-  const demoTotalBalance = useMemo(() => demoWalletAssets.reduce((acc, asset) => {
+  const walletContext = useContext(WalletContext);
+  if (!walletContext) {
+    throw new Error('WalletContext must be used within a WalletProvider');
+  }
+  const { demoAssets, realAssets } = walletContext;
+
+
+  const demoTotalBalance = useMemo(() => demoAssets.reduce((acc, asset) => {
     return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
-  }, 0), []);
+  }, 0), [demoAssets]);
   
-  const realTotalBalance = useMemo(() => realWalletAssets.reduce((acc, asset) => {
+  const realTotalBalance = useMemo(() => realAssets.reduce((acc, asset) => {
     return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
-  }, 0), []);
+  }, 0), [realAssets]);
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(receiveAddress).then(() => {
@@ -176,7 +192,7 @@ export default function WalletPage() {
               <CardDescription>A list of all assets in your demo wallet.</CardDescription>
             </CardHeader>
             <CardContent>
-              <WalletAssetTable assets={demoWalletAssets} />
+              <WalletAssetTable assets={demoAssets} />
             </CardContent>
           </Card>
         </TabsContent>
@@ -331,7 +347,7 @@ export default function WalletPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-                <WalletAssetTable assets={realWalletAssets} />
+                <WalletAssetTable assets={realAssets} />
             </CardContent>
           </Card>
         </TabsContent>

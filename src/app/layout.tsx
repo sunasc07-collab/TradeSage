@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
+import { WalletProvider } from '@/context/wallet-context';
 
 export const metadata: Metadata = {
   title: 'TradeSage',
@@ -22,13 +23,15 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Code+Pro&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <div className="p-4 sm:p-6 lg:p-8">{children}</div>
-          </SidebarInset>
-        </SidebarProvider>
-        <Toaster />
+        <WalletProvider>
+          <SidebarProvider>
+            <AppSidebar />
+            <SidebarInset>
+              <div className="p-4 sm:p-6 lg:p-8">{children}</div>
+            </SidebarInset>
+          </SidebarProvider>
+          <Toaster />
+        </WalletProvider>
       </body>
     </html>
   );
