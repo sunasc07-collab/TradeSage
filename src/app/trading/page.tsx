@@ -109,6 +109,12 @@ export default function TradingPage() {
           title: "Wallet Connected",
           description: `You are now connected with ${selectedWallet}.`,
         });
+      } else if (walletInfo.isProvider) {
+        setConnectedWallet(selectedWallet);
+        toast({
+          title: "Wallet Connected",
+          description: `You are now connected with ${selectedWallet}.`,
+        });
       } else {
         setConnectedWallet(null);
         toast({
@@ -158,6 +164,8 @@ export default function TradingPage() {
                     <TableHead>Signal</TableHead>
                     <TableHead className="text-right">Confidence</TableHead>
                     <TableHead>Strategy</TableHead>
+                    <TableHead>Blockchain</TableHead>
+                    <TableHead>Timeframe</TableHead>
                     <TableHead className="text-right">Entry Price</TableHead>
                     <TableHead className="text-right">Stop Loss</TableHead>
                     <TableHead className="text-right">Take Profit</TableHead>
@@ -167,7 +175,7 @@ export default function TradingPage() {
                 <TableBody>
                   {isLoadingSuggestions ? (
                     <TableRow>
-                        <TableCell colSpan={8} className="text-center">
+                        <TableCell colSpan={10} className="text-center">
                             <div className="flex justify-center items-center gap-2">
                                 <Loader2 className="h-4 w-4 animate-spin"/>
                                 <span>Loading AI suggestions...</span>
@@ -176,7 +184,7 @@ export default function TradingPage() {
                     </TableRow>
                   ) : tradeSuggestions.length === 0 ? (
                     <TableRow>
-                        <TableCell colSpan={8} className="text-center">
+                        <TableCell colSpan={10} className="text-center">
                             No high-confidence trade suggestions available at the moment.
                         </TableCell>
                     </TableRow>
@@ -191,6 +199,8 @@ export default function TradingPage() {
                         </TableCell>
                         <TableCell className="text-right">{trade.confidence}</TableCell>
                         <TableCell>{trade.strategy}</TableCell>
+                        <TableCell>{trade.blockchain}</TableCell>
+                        <TableCell>{trade.timeframe}</TableCell>
                         <TableCell className="text-right font-code">{trade.entry}</TableCell>
                         <TableCell className="text-right font-code">{trade.stopLoss}</TableCell>
                         <TableCell className="text-right font-code">{trade.takeProfit}</TableCell>

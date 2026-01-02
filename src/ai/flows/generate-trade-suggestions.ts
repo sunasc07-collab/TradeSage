@@ -61,6 +61,8 @@ const SuggestionSchema = z.object({
   entry: z.string().describe('The suggested entry price'),
   stopLoss: z.string().describe('The suggested stop loss price'),
   takeProfit: z.string().describe('The suggested take profit price'),
+  blockchain: z.string().describe('The blockchain the token is on, e.g., Ethereum, Solana'),
+  timeframe: z.string().describe('The estimated timeframe to achieve growth, e.g., 6-12 months'),
 });
 
 const GenerateTradeSuggestionsOutputSchema = z.object({
@@ -82,9 +84,9 @@ Your task is to perform a tedious and careful analysis of the market to find tok
 
 CRITICAL INSTRUCTIONS:
 1.  Only recommend tokens that have a 95% or greater chance of success.
-2.  For each token, provide a full trading setup: Asset, Signal, Confidence, Strategy, Entry Price, Stop Loss, and Take Profit.
+2.  For each token, provide a full trading setup: Asset, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit, Blockchain, and the estimated Timeframe for growth.
 3.  Focus on new and emerging tokens that are not yet widely known.
-4.  Generate 3-5 suggestions that meet these strict criteria. If you cannot find any that meet the 95% confidence threshold, return an empty list.
+4.  Generate up to 5 suggestions that meet these strict criteria. If you cannot find any that meet the 95% confidence threshold, return an empty list.
 
 Begin your analysis now.`,
 });
@@ -108,6 +110,8 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
                     entry: '$0.005',
                     stopLoss: '$0.004',
                     takeProfit: '$0.50',
+                    blockchain: 'Solana',
+                    timeframe: '6-12 Months'
                 },
                 {
                     asset: 'MOON-Y/USD',
@@ -117,6 +121,19 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
                     entry: '$0.012',
                     stopLoss: '$0.009',
                     takeProfit: '$1.10',
+                    blockchain: 'Ethereum',
+                    timeframe: '8-14 Months'
+                },
+                 {
+                    asset: 'WEB3-Z/USD',
+                    signal: 'Strong Buy',
+                    confidence: '95%',
+                    strategy: 'DeFi Yield',
+                    entry: '$0.025',
+                    stopLoss: '$0.018',
+                    takeProfit: '$2.50',
+                    blockchain: 'Base',
+                    timeframe: '12-18 Months'
                 },
             ]
         }
