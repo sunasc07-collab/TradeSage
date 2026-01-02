@@ -55,6 +55,7 @@ const getSocialMediaSentiment = ai.defineTool(
 
 const SuggestionSchema = z.object({
   asset: z.string().describe('The asset ticker, e.g., TOKEN/USD'),
+  iconUrl: z.string().url().describe('The URL for the token icon.'),
   signal: z.enum(['Strong Buy', 'Buy', 'Sell', 'Strong Sell']),
   confidence: z.string().describe('The confidence level of the signal as a percentage, e.g., 95%'),
   strategy: z.string().describe('The trading strategy, e.g., Breakout, Momentum'),
@@ -84,7 +85,7 @@ Your task is to perform a tedious and careful analysis of the market to find tok
 
 CRITICAL INSTRUCTIONS:
 1.  Only recommend tokens that have a 95% or greater chance of success.
-2.  For each token, provide a full trading setup: Asset, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit, Blockchain, and the estimated Timeframe for growth.
+2.  For each token, provide a full trading setup: Asset, a URL for its icon, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit, Blockchain, and the estimated Timeframe for growth.
 3.  Focus on new and emerging tokens that are not yet widely known.
 4.  Generate up to 5 suggestions that meet these strict criteria. If you cannot find any that meet the 95% confidence threshold, return an empty list.
 
@@ -104,6 +105,7 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
             suggestions: [
                 {
                     asset: 'GEM-X/USD',
+                    iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/gem.svg',
                     signal: 'Strong Buy',
                     confidence: '98%',
                     strategy: 'Breakout',
@@ -115,6 +117,7 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
                 },
                 {
                     asset: 'MOON-Y/USD',
+                    iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/moon.svg',
                     signal: 'Strong Buy',
                     confidence: '96%',
                     strategy: 'Momentum',
@@ -126,6 +129,7 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
                 },
                  {
                     asset: 'WEB3-Z/USD',
+                    iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/web.svg',
                     signal: 'Strong Buy',
                     confidence: '95%',
                     strategy: 'DeFi Yield',

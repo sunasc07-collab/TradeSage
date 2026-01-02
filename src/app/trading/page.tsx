@@ -32,6 +32,7 @@ import {
   GenerateTradeSuggestionsOutput,
   generateTradeSuggestions,
 } from "@/ai/flows/generate-trade-suggestions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Wallet = {
   name: string;
@@ -191,7 +192,15 @@ export default function TradingPage() {
                   ) : (
                     tradeSuggestions.map((trade) => (
                       <TableRow key={trade.asset}>
-                        <TableCell className="font-medium">{trade.asset}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={trade.iconUrl} alt={trade.asset} />
+                              <AvatarFallback>{trade.asset.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium">{trade.asset}</span>
+                          </div>
+                        </TableCell>
                         <TableCell>
                           <Badge variant={trade.signal.includes('Buy') ? 'default' : 'destructive'} className={trade.signal.includes('Buy') ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}>
                             {trade.signal}
