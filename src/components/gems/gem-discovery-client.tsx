@@ -28,25 +28,42 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const blockchains = [
+  { id: "solana", label: "Solana" },
+  { id: "ethereum", label: "Ethereum" },
+  { id: "base", label: "Base" },
+  { id: "polygon", label: "Polygon" },
+  { id: "bsc", label: "BSC" },
+  { id: "avalanche", label: "Avalanche" },
+];
 
 const FormSchema = z.object({
-  prompt: z
-    .string()
-    .min(20, {
-      message: "Criteria must be at least 20 characters.",
-    })
-    .max(5000, {
-      message: "Criteria cannot be more than 5000 characters.",
-    }),
+  marketCap: z.array(z.number()).min(2),
+  tradingVolume: z.array(z.number()).min(2),
+  inflow: z.array(z.number()).min(2),
+  blockchains: z.array(z.string()).refine((value) => value.some((item) => item), {
+    message: "You have to select at least one blockchain.",
+  }),
 });
+
+// Helper to format large numbers
+const formatNumber = (num: number) => {
+  if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1)}B`;
+  if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
+  if (num >= 1_000) return `${(num / 1_000).toFixed(1)}K`;
+  return num.toString();
+};
 
 export function GemDiscoveryClient() {
   const [isLoading, setIsLoading] = useState(false);
@@ -56,16 +73,29 @@ export function GemDiscoveryClient() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      prompt:
-        "Find me crypto gems in the AI or DePIN sector with a market cap below $50 million, strong community engagement on Twitter/X, and recent developer activity on GitHub.",
+      marketCap: [100000, 50000000],
+      tradingVolume: [50000, 1000000],
+      inflow: [10000, 500000],
+      blockchains: ["solana", "base"],
     },
   });
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true);
     setResult(null);
+
+    // Construct a detailed prompt from the form data
+    const prompt = `
+      Find me crypto gems with the following criteria:
+      - Market Cap between $${formatNumber(data.marketCap[0])} and $${formatNumber(data.marketCap[1])}.
+      - 24h Trading Volume between $${formatNumber(data.tradingVolume[0])} and $${formatNumber(data.tradingVolume[1])}.
+      - 24h Inflow between $${formatNumber(data.inflow[0])} and $${formatNumber(data.inflow[1])}.
+      - The tokens must be on one of the following blockchains: ${data.blockchains.join(", ")}.
+      - Prioritize tokens with strong community engagement on Twitter/X and recent developer activity on GitHub.
+    `;
+
     try {
-      const gemsResult = await identifyCryptoGems({ prompt: data.prompt });
+      const gemsResult = await identifyCryptoGems({ prompt });
       setResult(gemsResult);
     } catch (error) {
       console.error(error);
@@ -85,30 +115,134 @@ export function GemDiscoveryClient() {
         <CardHeader>
           <CardTitle>Discovery Criteria</CardTitle>
           <CardDescription>
-            Enter your criteria for finding the next 100x crypto gem.
+            Use the controls below to define your criteria for the next 100x crypto gem.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="prompt"
+                name="marketCap"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Gem Criteria</FormLabel>
+                    <FormLabel>Market Cap (USD)</FormLabel>
                     <FormControl>
-                      <Textarea
-                        placeholder="e.g., 'Low market cap AI tokens with high social media velocity...'"
-                        className="min-h-[200px] font-code"
-                        {...field}
+                       <Slider
+                        min={10000}
+                        max={100000000}
+                        step={10000}
+                        value={field.value}
+                        onValueChange={field.onChange}
                       />
                     </FormControl>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>${formatNumber(field.value[0])}</span>
+                      <span>${formatNumber(field.value[1])}</span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tradingVolume"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>24h Trading Volume (USD)</FormLabel>
+                     <FormControl>
+                      <Slider
+                        min={10000}
+                        max={5000000}
+                        step={10000}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      />
+                    </FormControl>
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>${formatNumber(field.value[0])}</span>
+                      <span>${formatNumber(field.value[1])}</span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="inflow"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>24h Inflow (USD)</FormLabel>
+                    <FormControl>
+                       <Slider
+                        min={1000}
+                        max={1000000}
+                        step={1000}
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      />
+                    </FormControl>
+                     <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>${formatNumber(field.value[0])}</span>
+                      <span>${formatNumber(field.value[1])}</span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="blockchains"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel className="text-base">Blockchains</FormLabel>
+                      <FormDescription>
+                        Select the blockchains to search for gems on.
+                      </FormDescription>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      {blockchains.map((item) => (
+                        <FormField
+                          key={item.id}
+                          control={form.control}
+                          name="blockchains"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={item.id}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(item.id)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...field.value, item.id])
+                                        : field.onChange(
+                                            field.value?.filter(
+                                              (value) => value !== item.id
+                                            )
+                                          )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {item.label}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isLoading}>
+
+
+              <Button type="submit" disabled={isLoading} className="w-full">
                 {isLoading ? (
                   <Loader2 className="animate-spin" />
                 ) : (
