@@ -33,6 +33,8 @@ import {
   generateTradeSuggestions,
 } from "@/ai/flows/generate-trade-suggestions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 type Wallet = {
   name: string;
@@ -75,6 +77,7 @@ export default function TradingPage() {
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [tradeSuggestions, setTradeSuggestions] = useState<TradeSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
+  const [tradingAccount, setTradingAccount] = useState<'demo' | 'real'>('demo');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -152,17 +155,17 @@ export default function TradingPage() {
   };
 
   const handleExecute = (trade: TradeSuggestion) => {
-    if (!connectedWallet) {
+    if (tradingAccount === 'real' && !connectedWallet) {
         toast({
             variant: "destructive",
             title: "Wallet Not Connected",
-            description: "Please connect your wallet to execute trades.",
+            description: "Please connect your wallet to execute trades with your real account.",
         });
         return;
     }
     toast({
         title: "Trade Executed!",
-        description: `Your order to ${trade.signal} ${trade.asset} has been placed.`,
+        description: `Your order to ${trade.signal} ${trade.asset} has been placed using your ${tradingAccount} account.`,
     });
   }
 
@@ -176,11 +179,23 @@ export default function TradingPage() {
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-3">
           <Card>
-            <CardHeader>
-              <CardTitle>AI-Powered Trade Suggestions</CardTitle>
-              <CardDescription>
-                High-probability trade setups identified by TradeSage AI.
-              </CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>AI-Powered Trade Suggestions</CardTitle>
+                <CardDescription>
+                  High-probability trade setups identified by TradeSage AI.
+                </CardDescription>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="trading-account-switch">
+                  {tradingAccount === 'demo' ? 'Demo' : 'Real'} Account
+                </Label>
+                <Switch
+                  id="trading-account-switch"
+                  checked={tradingAccount === 'real'}
+                  onCheckedChange={(checked) => setTradingAccount(checked ? 'real' : 'demo')}
+                />
+              </div>
             </CardHeader>
             <CardContent>
               <Table>
@@ -260,7 +275,7 @@ export default function TradingPage() {
             <CardHeader>
               <CardTitle>Wallet Integration</CardTitle>
               <CardDescription>
-                Connect to your favorite Web3 wallets to enable automated trading.
+                Connect to your favorite Web3 wallets to enable real account trading.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col items-start gap-4 sm:flex-row">
