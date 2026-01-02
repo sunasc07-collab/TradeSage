@@ -57,7 +57,7 @@ const WalletAssetTable = ({ assets }: { assets: WalletAsset[] }) => {
         <TableRow>
           <TableHead>Asset</TableHead>
           <TableHead>Balance</TableHead>
-          <TableHead className="text-right">Value (USD)</TableHead>
+          <TableHead className="text-right">Value (USDT)</TableHead>
           <TableHead className="text-right">24h Change</TableHead>
           <TableHead className="text-right">Allocation</TableHead>
         </TableRow>
@@ -80,7 +80,7 @@ const WalletAssetTable = ({ assets }: { assets: WalletAsset[] }) => {
               </div>
             </TableCell>
             <TableCell className="font-code">{asset.balance}</TableCell>
-            <TableCell className="text-right font-code">{`$${parseFloat(asset.value.replace(/[^0-9.-]+/g, '')).toLocaleString()}`}</TableCell>
+            <TableCell className="text-right font-code">{`${parseFloat(asset.value.replace(/[^0-9.-]+/g, '')).toLocaleString()}`}</TableCell>
             <TableCell
               className={cn(
                 'text-right font-code',
@@ -168,6 +168,7 @@ export default function WalletPage() {
                   {demoTotalBalance.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
+                    currencyDisplay: 'code'
                   })}
                 </div>
               </CardContent>
@@ -181,7 +182,7 @@ export default function WalletPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2 text-4xl font-bold font-headline text-green-400">
-                  +$1,204.58
+                  +1,204.58 USDT
                   <span className="flex items-center gap-1 text-lg text-green-400">
                     <ArrowUpRight className="h-5 w-5" />
                     +1.8%
@@ -321,6 +322,7 @@ export default function WalletPage() {
                   {realTotalBalance.toLocaleString('en-US', {
                     style: 'currency',
                     currency: 'USD',
+                    currencyDisplay: 'code',
                   })}
                 </div>
               </CardContent>
@@ -334,7 +336,7 @@ export default function WalletPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-baseline gap-2 text-4xl font-bold font-headline text-red-400">
-                  -$251.32
+                  -251.32 USDT
                   <span className="flex items-center gap-1 text-lg text-red-400">
                     <ArrowDown className="h-5 w-5" />
                     -1.2%

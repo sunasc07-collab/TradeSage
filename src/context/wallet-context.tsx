@@ -7,8 +7,8 @@ import { createContext, useState, ReactNode } from 'react';
 // This is a simplified conversion. A real app would need a more robust mapping.
 const tradeToAsset = (trade: TradeSuggestion, amount: number): WalletAsset => {
     const [ticker] = trade.asset.split('/');
-    const entryPrice = parseFloat(trade.entry.replace('$', ''));
-    // Simulate buying 'amount' USD worth of the asset
+    const entryPrice = parseFloat(trade.entry.replace(/[^0-9.-]+/g, ''));
+    // Simulate buying 'amount' USDT worth of the asset
     const balance = (amount / entryPrice).toFixed(4);
 
     return {

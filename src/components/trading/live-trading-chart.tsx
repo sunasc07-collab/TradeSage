@@ -141,7 +141,7 @@ export function LiveTradingChart() {
     <Card>
       <CardHeader className="flex-col items-start gap-4 space-y-0 md:flex-row md:items-center md:space-y-0">
         <div className="flex-1">
-          <CardTitle>Live Trading Chart: {symbol}/USD</CardTitle>
+          <CardTitle>Live Trading Chart: {symbol}/USDT</CardTitle>
           <CardDescription>Simulated real-time 1-minute candlestick data.</CardDescription>
         </div>
         <form onSubmit={handleSymbolChange} className="flex gap-2">
@@ -174,7 +174,7 @@ export function LiveTradingChart() {
               orientation="right"
               domain={[minPrice, maxPrice]}
               stroke="hsl(var(--muted-foreground))"
-              tickFormatter={(price) => `$${price.toFixed(2)}`}
+              tickFormatter={(price) => `${price.toFixed(2)}`}
               axisLine={false}
               tickLine={false}
             />

@@ -191,7 +191,7 @@ export default function TradingPage() {
 
     toast({
         title: "Trade Executed!",
-        description: `Your order to ${tradeToExecute.signal} ${tradeToExecute.asset} for $${tradeAmount} has been placed using your ${tradingAccount} account.`,
+        description: `Your order to ${tradeToExecute.signal} ${tradeToExecute.asset} for ${tradeAmount} USDT has been placed using your ${tradingAccount} account.`,
     });
 
     setIsExecuteDialogOpen(false);
@@ -240,9 +240,9 @@ export default function TradingPage() {
                     <TableHead>Strategy</TableHead>
                     <TableHead>Blockchain</TableHead>
                     <TableHead>Timeframe</TableHead>
-                    <TableHead className="text-right">Entry Price</TableHead>
-                    <TableHead className="text-right">Stop Loss</TableHead>
-                    <TableHead className="text-right">Take Profit</TableHead>
+                    <TableHead className="text-right">Entry Price (USDT)</TableHead>
+                    <TableHead className="text-right">Stop Loss (USDT)</TableHead>
+                    <TableHead className="text-right">Take Profit (USDT)</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -346,7 +346,7 @@ export default function TradingPage() {
             </DialogHeader>
             <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="amount" className="text-right">Amount (USD)</Label>
+                    <Label htmlFor="amount" className="text-right">Amount (USDT)</Label>
                     <Input
                         id="amount"
                         type="number"

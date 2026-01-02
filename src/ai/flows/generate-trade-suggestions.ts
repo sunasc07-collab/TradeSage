@@ -55,14 +55,14 @@ const getSocialMediaSentiment = ai.defineTool(
 );
 
 const SuggestionSchema = z.object({
-  asset: z.string().describe('The asset ticker, e.g., TOKEN/USD'),
+  asset: z.string().describe('The asset ticker, e.g., TOKEN/USDT'),
   iconUrl: z.string().url().describe('The URL for the token icon.'),
   signal: z.enum(['Strong Buy', 'Buy', 'Sell', 'Strong Sell']),
   confidence: z.string().describe('The confidence level of the signal as a percentage, e.g., 95%'),
   strategy: z.string().describe('The trading strategy, e.g., Breakout, Momentum'),
-  entry: z.string().describe('The suggested entry price'),
-  stopLoss: z.string().describe('The suggested stop loss price'),
-  takeProfit: z.string().describe('The suggested take profit price'),
+  entry: z.string().describe('The suggested entry price in USDT'),
+  stopLoss: z.string().describe('The suggested stop loss price in USDT'),
+  takeProfit: z.string().describe('The suggested take profit price in USDT'),
   blockchain: z.string().describe('The blockchain the token is on, e.g., Ethereum, Solana'),
   timeframe: z.string().describe('The estimated timeframe to achieve growth, e.g., 1 Week'),
 });
@@ -99,7 +99,7 @@ The user has provided the following context. Focus your analysis on this:
 
 CRITICAL INSTRUCTIONS:
 1.  Only recommend tokens that have a 95% or greater chance of success.
-2.  For each token, provide a full trading setup: Asset, a URL for its icon, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit, Blockchain, and the estimated Timeframe for growth.
+2.  For each token, provide a full trading setup: Asset (as TOKEN/USDT), a URL for its icon, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit (all in USDT), Blockchain, and the estimated Timeframe for growth.
 3.  The growth Timeframe MUST be within '1 Week'.
 4.  Focus on new and emerging tokens that are not yet widely known, unless specified by the user prompt.
 5.  Generate up to 5 suggestions that meet these strict criteria. If you cannot find any that meet the 95% confidence threshold, return an empty list.
@@ -120,14 +120,14 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
          return {
              suggestions: [
                  {
-                     asset: `${gemSymbol}/USD`,
+                     asset: `${gemSymbol}/USDT`,
                      iconUrl: `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/${gemSymbol.toLowerCase()}.svg`,
                      signal: 'Strong Buy',
                      confidence: '99%',
                      strategy: 'Targeted Breakout',
-                     entry: '$0.002',
-                     stopLoss: '$0.0015',
-                     takeProfit: '$0.45',
+                     entry: '0.002',
+                     stopLoss: '0.0015',
+                     takeProfit: '0.45',
                      blockchain: 'Solana',
                      timeframe: '1 Week'
                  },
@@ -139,38 +139,38 @@ const generateTradeSuggestionsFlow = ai.defineFlow(
     return {
         suggestions: [
             {
-                asset: 'GEM-X/USD',
+                asset: 'GEM-X/USDT',
                 iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/gem.svg',
                 signal: 'Strong Buy',
                 confidence: '98%',
                 strategy: 'Breakout',
-                entry: '$0.005',
-                stopLoss: '$0.004',
-                takeProfit: '$0.50',
+                entry: '0.005',
+                stopLoss: '0.004',
+                takeProfit: '0.50',
                 blockchain: 'Solana',
                 timeframe: '1 Week'
             },
             {
-                asset: 'MOON-Y/USD',
+                asset: 'MOON-Y/USDT',
                 iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/moon.svg',
                 signal: 'Strong Buy',
                 confidence: '96%',
                 strategy: 'Momentum',
-                entry: '$0.012',
-                stopLoss: '$0.009',
-                takeProfit: '$1.10',
+                entry: '0.012',
+                stopLoss: '0.009',
+                takeProfit: '1.10',
                 blockchain: 'Ethereum',
                 timeframe: '1 Week'
             },
              {
-                asset: 'WEB3-Z/USD',
+                asset: 'WEB3-Z/USDT',
                 iconUrl: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/web.svg',
                 signal: 'Strong Buy',
                 confidence: '95%',
                 strategy: 'DeFi Yield',
-                entry: '$0.025',
-                stopLoss: '$0.018',
-                takeProfit: '$2.50',
+                entry: '0.025',
+                stopLoss: '0.018',
+                takeProfit: '2.50',
                 blockchain: 'Base',
                 timeframe: '1 Week'
             },
