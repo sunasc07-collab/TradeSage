@@ -6,6 +6,7 @@ import {
   CandlestickChart,
   Gem,
   LayoutDashboard,
+  LineChart,
   Settings,
   Wallet,
 } from "lucide-react";
@@ -31,6 +32,7 @@ const navItems = [
   { href: "/analysis", icon: BrainCircuit, label: "Market Analysis" },
   { href: "/gems", icon: Gem, label: "Gem Discovery" },
   { href: "/trading", icon: CandlestickChart, label: "Trade Suggestions" },
+  { href: "/live-trading", icon: LineChart, label: "Live Trading" },
   { href: "/wallet", icon: Wallet, label: "Wallet" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
