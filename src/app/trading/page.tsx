@@ -68,10 +68,12 @@ const wallets: Record<string, Wallet> = {
   },
 };
 
+type TradeSuggestion = GenerateTradeSuggestionsOutput["suggestions"][0];
+
 export default function TradingPage() {
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
-  const [tradeSuggestions, setTradeSuggestions] = useState<GenerateTradeSuggestionsOutput["suggestions"]>([]);
+  const [tradeSuggestions, setTradeSuggestions] = useState<TradeSuggestion[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
   const { toast } = useToast();
 
@@ -140,6 +142,29 @@ export default function TradingPage() {
     setConnectedWallet(null);
     setSelectedWallet('');
   };
+
+  const handleDismiss = (asset: string) => {
+    setTradeSuggestions((prev) => prev.filter((trade) => trade.asset !== asset));
+    toast({
+        title: "Suggestion Dismissed",
+        description: `${asset} has been removed from the list.`,
+    });
+  };
+
+  const handleExecute = (trade: TradeSuggestion) => {
+    if (!connectedWallet) {
+        toast({
+            variant: "destructive",
+            title: "Wallet Not Connected",
+            description: "Please connect your wallet to execute trades.",
+        });
+        return;
+    }
+    toast({
+        title: "Trade Executed!",
+        description: `Your order to ${trade.signal} ${trade.asset} has been placed.`,
+    });
+  }
 
 
   return (
@@ -215,10 +240,10 @@ export default function TradingPage() {
                         <TableCell className="text-right font-code">{trade.takeProfit}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" onClick={() => handleDismiss(trade.asset)}>
                               Dismiss
                             </Button>
-                            <Button size="sm">Execute</Button>
+                            <Button size="sm" onClick={() => handleExecute(trade)}>Execute</Button>
                           </div>
                         </TableCell>
                       </TableRow>
