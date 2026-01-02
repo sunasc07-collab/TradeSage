@@ -63,14 +63,20 @@ const CandlestickShape = (props: any) => {
   const { x, y, width, height, low, high, open, close } = props;
   const isRising = close > open;
   const color = isRising ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))';
-  const lineStyle = { stroke: color, strokeWidth: 1 };
+  const wickColor = isRising ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))';
+
+  const bodyHeight = Math.abs(y - props.y)
+  const bodyY = isRising ? y + height: y;
+
+  const bodyActualHeight = Math.max(1, bodyHeight);
 
   return (
-    <g>
+    <g stroke={wickColor} strokeWidth="1" fill={color}>
       {/* Wick */}
-      <line x1={x + width / 2} y1={y} x2={x + width / 2} y2={height > 0 ? y + height : y} style={lineStyle} />
+      <path d={`M ${x + width / 2} ${props.y} L ${x + width / 2} ${y}`} />
+      <path d={`M ${x + width / 2} ${y + height} L ${x + width / 2} ${props.y + props.height}`} />
       {/* Body */}
-      <rect x={x} y={isRising ? y + (height * (high - close) / (high - low)) : y + (height * (high - open) / (high - low))} width={width} height={Math.abs(open-close) / (high-low) * height} fill={color} />
+      <rect x={x} y={bodyY} width={width} height={bodyActualHeight} />
     </g>
   );
 };
