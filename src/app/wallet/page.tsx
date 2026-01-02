@@ -324,7 +324,7 @@ export default function WalletPage() {
                   })}
                 </div>
               </CardContent>
-            </card>
+            </Card>
             <Card>
               <CardHeader>
                 <CardTitle>24h Performance</CardTitle>
