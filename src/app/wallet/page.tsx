@@ -128,105 +128,7 @@ export default function WalletPage() {
 
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader title="Wallet">
-        <div className="flex gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">
-                <ArrowDown className="mr-2 h-4 w-4" /> Receive
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Receive USDT</DialogTitle>
-                <DialogDescription>
-                  Scan the QR code or copy the address below to receive USDT
-                  (BSC Network).
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-col items-center justify-center gap-4 py-4">
-                <div className="rounded-lg bg-white p-2">
-                  <Image
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${receiveAddress}`}
-                    alt="USDT Receive QR Code"
-                    width={150}
-                    height={150}
-                  />
-                </div>
-                <div className="flex w-full max-w-sm items-center space-x-2">
-                  <Input
-                    id="address"
-                    value={receiveAddress}
-                    readOnly
-                    className="font-code"
-                  />
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="secondary"
-                    onClick={copyToClipboard}
-                  >
-                    {hasCopied ? (
-                      <ClipboardCheck className="h-4 w-4" />
-                    ) : (
-                      <Clipboard className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                <ArrowUp className="mr-2 h-4 w-4" /> Send
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Send USDT</DialogTitle>
-                <DialogDescription>
-                  Enter the recipient address and amount to send.
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSend}>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="address" className="text-right">
-                      Address
-                    </Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      defaultValue="0x9hG8fE7d6C5b4A3F2e1D0c9B8a7F6e5D4c3b2a1"
-                      className="col-span-3 font-code"
-                      required
-                    />
-                  </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="amount" className="text-right">
-                      Amount
-                    </Label>
-                    <Input
-                      id="amount"
-                      name="amount"
-                      type="number"
-                      step="0.01"
-                      placeholder="0.00"
-                      className="col-span-3"
-                      required
-                    />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button type="submit">Send Funds</Button>
-                </DialogFooter>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </PageHeader>
+      <PageHeader title="Wallet" />
       <Tabs defaultValue="demo" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="demo">Demo Account</TabsTrigger>
@@ -279,6 +181,113 @@ export default function WalletPage() {
           </Card>
         </TabsContent>
         <TabsContent value="real" className="mt-4 space-y-6">
+          <Card>
+             <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Real Account Actions</CardTitle>
+                <CardDescription>
+                  Send and receive funds from your real account.
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="outline">
+                      <ArrowDown className="mr-2 h-4 w-4" /> Receive
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Receive USDT</DialogTitle>
+                      <DialogDescription>
+                        Scan the QR code or copy the address below to receive USDT
+                        (BSC Network).
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center justify-center gap-4 py-4">
+                      <div className="rounded-lg bg-white p-2">
+                        <Image
+                          src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${receiveAddress}`}
+                          alt="USDT Receive QR Code"
+                          width={150}
+                          height={150}
+                        />
+                      </div>
+                      <div className="flex w-full max-w-sm items-center space-x-2">
+                        <Input
+                          id="address"
+                          value={receiveAddress}
+                          readOnly
+                          className="font-code"
+                        />
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="secondary"
+                          onClick={copyToClipboard}
+                        >
+                          {hasCopied ? (
+                            <ClipboardCheck className="h-4 w-4" />
+                          ) : (
+                            <Clipboard className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <ArrowUp className="mr-2 h-4 w-4" /> Send
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>Send USDT</DialogTitle>
+                      <DialogDescription>
+                        Enter the recipient address and amount to send.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSend}>
+                      <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="address" className="text-right">
+                            Address
+                          </Label>
+                          <Input
+                            id="address"
+                            name="address"
+                            defaultValue="0x9hG8fE7d6C5b4A3F2e1D0c9B8a7F6e5D4c3b2a1"
+                            className="col-span-3 font-code"
+                            required
+                          />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                          <Label htmlFor="amount" className="text-right">
+                            Amount
+                          </Label>
+                          <Input
+                            id="amount"
+                            name="amount"
+                            type="number"
+                            step="0.01"
+                            placeholder="0.00"
+                            className="col-span-3"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">Send Funds</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardHeader>
+          </Card>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <Card>
               <CardHeader>
