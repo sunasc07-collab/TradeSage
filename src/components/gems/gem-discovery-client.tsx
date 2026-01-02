@@ -176,7 +176,7 @@ export function GemDiscoveryClient() {
                     <FormControl>
                        <Slider
                         min={1000}
-                        max={1000000}
+                        max={10000000}
                         step={1000}
                         value={field.value}
                         onValueChange={field.onChange}
