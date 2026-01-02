@@ -24,10 +24,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { tradeSuggestions } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+import {
+  GenerateTradeSuggestionsOutput,
+  generateTradeSuggestions,
+} from "@/ai/flows/generate-trade-suggestions";
 
 type Wallet = {
   name: string;
@@ -66,7 +70,30 @@ const wallets: Record<string, Wallet> = {
 export default function TradingPage() {
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
+  const [tradeSuggestions, setTradeSuggestions] = useState<GenerateTradeSuggestionsOutput["suggestions"]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      setIsLoadingSuggestions(true);
+      try {
+        const result = await generateTradeSuggestions();
+        setTradeSuggestions(result.suggestions);
+      } catch (error) {
+        console.error("Failed to get trade suggestions", error);
+        toast({
+            variant: "destructive",
+            title: "Error fetching suggestions",
+            description: "Could not load AI-powered trade suggestions.",
+        })
+      } finally {
+        setIsLoadingSuggestions(false);
+      }
+    };
+    fetchSuggestions();
+  }, [toast]);
+
 
   const handleConnect = () => {
     if (!selectedWallet) return;
@@ -138,29 +165,46 @@ export default function TradingPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tradeSuggestions.map((trade) => (
-                    <TableRow key={trade.id}>
-                      <TableCell className="font-medium">{trade.asset}</TableCell>
-                      <TableCell>
-                        <Badge variant={trade.signal.includes('Buy') ? 'default' : 'destructive'} className={trade.signal.includes('Buy') ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}>
-                          {trade.signal}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{trade.confidence}</TableCell>
-                      <TableCell>{trade.strategy}</TableCell>
-                      <TableCell className="text-right font-code">{trade.entry}</TableCell>
-                      <TableCell className="text-right font-code">{trade.stopLoss}</TableCell>
-                      <TableCell className="text-right font-code">{trade.takeProfit}</TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="outline" size="sm">
-                            Dismiss
-                          </Button>
-                          <Button size="sm">Execute</Button>
-                        </div>
-                      </TableCell>
+                  {isLoadingSuggestions ? (
+                    <TableRow>
+                        <TableCell colSpan={8} className="text-center">
+                            <div className="flex justify-center items-center gap-2">
+                                <Loader2 className="h-4 w-4 animate-spin"/>
+                                <span>Loading AI suggestions...</span>
+                            </div>
+                        </TableCell>
                     </TableRow>
-                  ))}
+                  ) : tradeSuggestions.length === 0 ? (
+                    <TableRow>
+                        <TableCell colSpan={8} className="text-center">
+                            No high-confidence trade suggestions available at the moment.
+                        </TableCell>
+                    </TableRow>
+                  ) : (
+                    tradeSuggestions.map((trade) => (
+                      <TableRow key={trade.asset}>
+                        <TableCell className="font-medium">{trade.asset}</TableCell>
+                        <TableCell>
+                          <Badge variant={trade.signal.includes('Buy') ? 'default' : 'destructive'} className={trade.signal.includes('Buy') ? 'bg-green-500/20 text-green-400 border-green-500/30' : 'bg-red-500/20 text-red-400 border-red-500/30'}>
+                            {trade.signal}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right">{trade.confidence}</TableCell>
+                        <TableCell>{trade.strategy}</TableCell>
+                        <TableCell className="text-right font-code">{trade.entry}</TableCell>
+                        <TableCell className="text-right font-code">{trade.stopLoss}</TableCell>
+                        <TableCell className="text-right font-code">{trade.takeProfit}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button variant="outline" size="sm">
+                              Dismiss
+                            </Button>
+                            <Button size="sm">Execute</Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
             </CardContent>

@@ -109,12 +109,6 @@ export const tradeHistory = [
   },
 ];
 
-export const tradeSuggestions = [
-  { id: 'SUG-01', asset: 'LINK/USD', signal: 'Strong Buy', confidence: '92%', strategy: 'Breakout', entry: '$18.50', stopLoss: '$17.80', takeProfit: '$20.50' },
-  { id: 'SUG-02', asset: 'MATIC/USD', signal: 'Buy', confidence: '85%', strategy: 'Momentum', entry: '$1.12', stopLoss: '$1.08', takeProfit: '$1.22' },
-  { id: 'SUG-03', asset: 'XRP/USD', signal: 'Sell', confidence: '78%', strategy: 'Reversal', entry: '$0.61', stopLoss: '$0.63', takeProfit: '$0.58' },
-];
-
 
 export const demoWalletAssets = [
   {
