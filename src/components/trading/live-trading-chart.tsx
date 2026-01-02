@@ -9,7 +9,6 @@ import {
   Tooltip,
   CartesianGrid,
   Bar,
-  Candlestick,
   Line,
 } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -57,6 +56,23 @@ const CustomTooltip = ({ active, payload, label }: any) => {
       );
     }
     return null;
+};
+
+// A custom shape for the candlestick
+const CandlestickShape = (props: any) => {
+  const { x, y, width, height, low, high, open, close } = props;
+  const isRising = close > open;
+  const color = isRising ? 'hsl(var(--chart-2))' : 'hsl(var(--destructive))';
+  const lineStyle = { stroke: color, strokeWidth: 1 };
+
+  return (
+    <g>
+      {/* Wick */}
+      <line x1={x + width / 2} y1={y} x2={x + width / 2} y2={height > 0 ? y + height : y} style={lineStyle} />
+      {/* Body */}
+      <rect x={x} y={isRising ? y + (height * (high - close) / (high - low)) : y + (height * (high - open) / (high - low))} width={width} height={Math.abs(open-close) / (high-low) * height} fill={color} />
+    </g>
+  );
 };
 
 
@@ -169,22 +185,22 @@ export function LiveTradingChart() {
 
             <Tooltip content={<CustomTooltip />} />
 
-            <Candlestick
-                yAxisId="price"
-                dataKey={{ open: 'open', high: 'high', low: 'low', close: 'close' }}
-                fill="hsl(var(--primary))"
-                stroke="hsl(var(--primary))"
-                isAnimationActive={false}
+            <Bar
+              yAxisId="price"
+              dataKey="close"
+              shape={<CandlestickShape />}
+              isAnimationActive={false}
             >
-                {data.map((entry, index) => (
-                    <Bar key={`candle-${index}`} shape={<div/>} fill={entry.open > entry.close ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))'} stroke={entry.open > entry.close ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))'} />
-                ))}
-            </Candlestick>
+               {data.map((entry, index) => (
+                <Bar key={`candle-${index}`} fill={entry.open > entry.close ? 'hsl(var(--destructive))' : 'hsl(var(--chart-2))'} />
+              ))}
+            </Bar>
+            
              <Line type="monotone" dataKey="close" stroke="hsl(var(--primary) / 0.5)" dot={false} yAxisId="price" isAnimationActive={false} />
 
-            <Bar yAxisId="volume" dataKey="volume" barSize={20} fill="hsl(var(--muted))" isAnimationActive={false}>
+            <Bar yAxisId="volume" dataKey="volume" barSize={20} isAnimationActive={false}>
                 {data.map((entry, index) => (
-                    <Bar key={`bar-${index}`} shape={<div/>} fill={entry.open > entry.close ? 'hsl(var(--destructive) / 0.3)' : 'hsl(var(--chart-2) / 0.3)'} />
+                    <Bar key={`bar-${index}`} fill={entry.open > entry.close ? 'hsl(var(--destructive) / 0.3)' : 'hsl(var(--chart-2) / 0.3)'} />
                 ))}
             </Bar>
           </ComposedChart>
