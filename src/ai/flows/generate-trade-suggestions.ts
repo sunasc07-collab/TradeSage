@@ -3,6 +3,7 @@
  * @fileOverview This file defines a Genkit flow for generating high-potential cryptocurrency trade suggestions.
  *
  * - generateTradeSuggestions - A function that generates trade suggestions.
+ * - GenerateTradeSuggestionsInput - The input type for the generateTradeSuggestions function.
  * - GenerateTradeSuggestionsOutput - The return type for the generateTradeSuggestions function.
  */
 
@@ -66,17 +67,24 @@ const SuggestionSchema = z.object({
   timeframe: z.string().describe('The estimated timeframe to achieve growth, e.g., 1 Week'),
 });
 
+const GenerateTradeSuggestionsInputSchema = z.object({
+  prompt: z.string().optional().describe('An optional prompt to focus the suggestions, e.g., on specific discovered gems.'),
+});
+
+export type GenerateTradeSuggestionsInput = z.infer<typeof GenerateTradeSuggestionsInputSchema>;
+
 const GenerateTradeSuggestionsOutputSchema = z.object({
   suggestions: z.array(SuggestionSchema),
 });
 export type GenerateTradeSuggestionsOutput = z.infer<typeof GenerateTradeSuggestionsOutputSchema>;
 
-export async function generateTradeSuggestions(): Promise<GenerateTradeSuggestionsOutput> {
-  return generateTradeSuggestionsFlow();
+export async function generateTradeSuggestions(input?: GenerateTradeSuggestionsInput): Promise<GenerateTradeSuggestionsOutput> {
+  return generateTradeSuggestionsFlow(input || {});
 }
 
 const generateTradeSuggestionsPrompt = ai.definePrompt({
   name: 'generateTradeSuggestionsPrompt',
+  input: {schema: GenerateTradeSuggestionsInputSchema},
   output: { schema: GenerateTradeSuggestionsOutputSchema },
   tools: [getMarketData, getSocialMediaSentiment],
   prompt: `You are a world-class crypto analyst with a specialty in identifying undiscovered Web3 gems with 10000x potential within a very short timeframe.
@@ -84,11 +92,16 @@ const generateTradeSuggestionsPrompt = ai.definePrompt({
 Your task is to perform a tedious and careful analysis of the market to find tokens that fit this profile. You MUST use all available tools to analyze market data, market sentiment, and social media buzz.
 Your analysis must be comprehensive, simulating data aggregation from sources like DEX Screener, Binance Web3, Trust Wallet, and other on-chain analysis platforms to find emerging tokens before they are widely known.
 
+{{#if prompt}}
+The user has provided the following context. Focus your analysis on this:
+"{{{prompt}}}"
+{{/if}}
+
 CRITICAL INSTRUCTIONS:
 1.  Only recommend tokens that have a 95% or greater chance of success.
 2.  For each token, provide a full trading setup: Asset, a URL for its icon, Signal, Confidence, Strategy, Entry Price, Stop Loss, Take Profit, Blockchain, and the estimated Timeframe for growth.
 3.  The growth Timeframe MUST be within '1 Week'.
-4.  Focus on new and emerging tokens that are not yet widely known.
+4.  Focus on new and emerging tokens that are not yet widely known, unless specified by the user prompt.
 5.  Generate up to 5 suggestions that meet these strict criteria. If you cannot find any that meet the 95% confidence threshold, return an empty list.
 
 Begin your analysis now.`,
@@ -97,9 +110,30 @@ Begin your analysis now.`,
 const generateTradeSuggestionsFlow = ai.defineFlow(
   {
     name: 'generateTradeSuggestionsFlow',
+    inputSchema: GenerateTradeSuggestionsInputSchema,
     outputSchema: GenerateTradeSuggestionsOutputSchema,
   },
-  async () => {
+  async (input) => {
+    if (input.prompt) {
+         // Simulate a targeted response for a specific gem
+         const gemSymbol = input.prompt.match(/\b([A-Z]{2,5})\b/)?.[1] || 'GEM';
+         return {
+             suggestions: [
+                 {
+                     asset: `${gemSymbol}/USD`,
+                     iconUrl: `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/${gemSymbol.toLowerCase()}.svg`,
+                     signal: 'Strong Buy',
+                     confidence: '99%',
+                     strategy: 'Targeted Breakout',
+                     entry: '$0.002',
+                     stopLoss: '$0.0015',
+                     takeProfit: '$0.45',
+                     blockchain: 'Solana',
+                     timeframe: '1 Week'
+                 },
+             ]
+         };
+    }
     // NOTE: To prevent rate-limiting errors during development, this flow
     // returns hardcoded data instead of making a live call to the AI model.
     return {

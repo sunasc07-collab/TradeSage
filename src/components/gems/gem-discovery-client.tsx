@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Gem, Loader2 } from "lucide-react";
+import { Gem, Loader2, CandlestickChart } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -38,6 +38,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
+import Link from "next/link";
 
 const blockchains = [
   { id: "solana", label: "Solana" },
@@ -315,6 +316,12 @@ export function GemDiscoveryClient() {
                           <Badge variant={getRiskBadgeVariant(gem.risk)}>{gem.risk}</Badge>
                         </div>
                       </div>
+                      <Button asChild size="sm">
+                        <Link href={`/trading?gem=${gem.symbol}&prompt=Generate a trade suggestion for the newly discovered gem: ${gem.name} (${gem.symbol})`}>
+                            <CandlestickChart />
+                            Trade
+                        </Link>
+                      </Button>
                     </AccordionContent>
                   </AccordionItem>
                 ))}
@@ -325,5 +332,3 @@ export function GemDiscoveryClient() {
     </div>
   );
 }
-
-    

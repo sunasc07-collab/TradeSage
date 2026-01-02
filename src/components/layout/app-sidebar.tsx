@@ -30,7 +30,7 @@ const navItems = [
   { href: "/", icon: LayoutDashboard, label: "Dashboard" },
   { href: "/analysis", icon: BrainCircuit, label: "Market Analysis" },
   { href: "/gems", icon: Gem, label: "Gem Discovery" },
-  { href: "/trading", icon: CandlestickChart, label: "Automated Trading" },
+  { href: "/trading", icon: CandlestickChart, label: "Trade Suggestions" },
   { href: "/wallet", icon: Wallet, label: "Wallet" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];

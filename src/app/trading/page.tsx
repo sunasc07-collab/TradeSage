@@ -36,8 +36,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { WalletContext } from "@/context/wallet-context";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useSearchParams } from "next/navigation";
 
 type Wallet = {
   name: string;
@@ -76,6 +77,9 @@ const wallets: Record<string, Wallet> = {
 type TradeSuggestion = GenerateTradeSuggestionsOutput["suggestions"][0];
 
 export default function TradingPage() {
+  const searchParams = useSearchParams();
+  const gemPrompt = searchParams.get('prompt');
+
   const [selectedWallet, setSelectedWallet] = useState<string>('');
   const [connectedWallet, setConnectedWallet] = useState<string | null>(null);
   const [tradeSuggestions, setTradeSuggestions] = useState<TradeSuggestion[]>([]);
@@ -96,7 +100,7 @@ export default function TradingPage() {
     const fetchSuggestions = async () => {
       setIsLoadingSuggestions(true);
       try {
-        const result = await generateTradeSuggestions();
+        const result = await generateTradeSuggestions({ prompt: gemPrompt || undefined });
         setTradeSuggestions(result.suggestions);
       } catch (error) {
         console.error("Failed to get trade suggestions", error);
@@ -110,7 +114,7 @@ export default function TradingPage() {
       }
     };
     fetchSuggestions();
-  }, [toast]);
+  }, [toast, gemPrompt]);
 
 
   const handleConnect = () => {
@@ -199,7 +203,7 @@ export default function TradingPage() {
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
-        title="Automated Trading"
+        title="Trade Suggestions"
         description="Execute trades automatically based on the AI's market analysis and forecasts."
       />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -209,7 +213,10 @@ export default function TradingPage() {
               <div>
                 <CardTitle>AI-Powered Trade Suggestions</CardTitle>
                 <CardDescription>
-                  High-probability trade setups identified by TradeSage AI.
+                  {gemPrompt
+                    ? `Showing a targeted suggestion for the discovered gem.`
+                    : "High-probability trade setups identified by TradeSage AI."
+                  }
                 </CardDescription>
               </div>
               <div className="flex items-center space-x-2">
