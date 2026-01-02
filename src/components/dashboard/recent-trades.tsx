@@ -1,4 +1,4 @@
-import { tradeHistory } from "@/lib/data";
+import { Trade, tradeHistory } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { CheckCircle, XCircle, Clock } from "lucide-react";
 import {
@@ -40,7 +40,7 @@ export function RecentTrades() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tradeHistory.map((trade) => (
+            {tradeHistory.map((trade: Trade) => (
               <TableRow key={trade.id}>
                 <TableCell className="font-medium">{trade.asset}</TableCell>
                 <TableCell>

@@ -108,16 +108,20 @@ export default function WalletPage() {
   if (!walletContext) {
     throw new Error('WalletContext must be used within a WalletProvider');
   }
-  const { demoAssets, realAssets } = walletContext;
+  const { demoAssets, realAssets, demoBalance, realBalance } = walletContext;
 
 
-  const demoTotalBalance = useMemo(() => demoAssets.reduce((acc, asset) => {
+  const demoTotalValue = useMemo(() => demoAssets.reduce((acc, asset) => {
     return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
   }, 0), [demoAssets]);
-  
-  const realTotalBalance = useMemo(() => realAssets.reduce((acc, asset) => {
+
+  const realTotalValue = useMemo(() => realAssets.reduce((acc, asset) => {
     return acc + parseFloat(asset.value.replace(/[^0-9.-]+/g, ''));
   }, 0), [realAssets]);
+
+  const demoTotalBalance = demoBalance + demoTotalValue;
+  const realTotalBalance = realBalance + realTotalValue;
+
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(receiveAddress).then(() => {
@@ -320,7 +324,7 @@ export default function WalletPage() {
                   })}
                 </div>
               </CardContent>
-            </Card>
+            </card>
             <Card>
               <CardHeader>
                 <CardTitle>24h Performance</CardTitle>

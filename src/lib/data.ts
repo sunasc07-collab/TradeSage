@@ -62,7 +62,17 @@ export const assetDistributionData = [
   { name: "Others", value: 10, fill: "var(--color-others)" },
 ];
 
-export const tradeHistory = [
+export type Trade = {
+  id: string;
+  asset: string;
+  type: "Buy" | "Sell";
+  status: "Open" | "Closed";
+  result: "Win" | "Loss" | "N/A";
+  pnl: string;
+  date: string;
+};
+
+export const tradeHistory: Trade[] = [
   {
     id: "TRD-001",
     asset: "BTC/USD",
@@ -110,69 +120,6 @@ export const tradeHistory = [
   },
 ];
 
+export const demoWalletAssets: WalletAsset[] = [];
 
-export const demoWalletAssets: WalletAsset[] = [
-  {
-    asset: "Bitcoin",
-    ticker: "BTC",
-    icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/btc.svg',
-    balance: "0.057",
-    value: "4000.00",
-    allocation: "40%",
-    change: "+1.2%",
-    changeType: "increase",
-  },
-  {
-    asset: "Ethereum",
-    ticker: "ETH",
-    icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/eth.svg',
-    balance: "0.88",
-    value: "3000.00",
-    allocation: "30%",
-    change: "-0.8%",
-    changeType: "decrease",
-  },
-  {
-    asset: "Solana",
-    ticker: "SOL",
-    icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/sol.svg',
-    balance: "12.12",
-    value: "2000.00",
-    allocation: "20%",
-    change: "+3.5%",
-    changeType: "increase",
-  },
-  {
-    asset: "Tether",
-    ticker: "USDT",
-    icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/usdt.svg',
-    balance: "1000",
-    value: "1000.00",
-    allocation: "10%",
-    change: "+0.0%",
-    changeType: "increase",
-  },
-];
-
-export const realWalletAssets: WalletAsset[] = [
-    {
-      asset: "Bitcoin",
-      ticker: "BTC",
-      icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/btc.svg',
-      balance: "0.15",
-      value: "10406.98",
-      allocation: "70%",
-      change: "+2.1%",
-      changeType: "increase",
-    },
-    {
-      asset: "Ethereum",
-      ticker: "ETH",
-      icon: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c258d5/svg/color/eth.svg',
-      balance: "1.25",
-      value: "4251.22",
-      allocation: "30%",
-      change: "-1.2%",
-      changeType: "decrease",
-    },
-  ];
+export const realWalletAssets: WalletAsset[] = [];

@@ -41,6 +41,9 @@ type WalletContextType = {
   demoAssets: WalletAsset[];
   realAssets: WalletAsset[];
   addAsset: (accountType: 'demo' | 'real', trade: TradeSuggestion, amount: number) => void;
+  demoBalance: number;
+  realBalance: number;
+  updateBalance: (accountType: 'demo' | 'real', pnl: number) => void;
 };
 
 export const WalletContext = createContext<WalletContextType | undefined>(
@@ -50,38 +53,49 @@ export const WalletContext = createContext<WalletContextType | undefined>(
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [demoAssets, setDemoAssets] = useState<WalletAsset[]>(demoWalletAssets);
   const [realAssets, setRealAssets] = useState<WalletAsset[]>(realWalletAssets);
+  const [demoBalance, setDemoBalance] = useState(10000);
+  const [realBalance, setRealBalance] = useState(0);
 
   const addAsset = (accountType: 'demo' | 'real', trade: TradeSuggestion, amount: number) => {
     const newAsset = tradeToAsset(trade, amount);
-    const updateAssets = (prevAssets: WalletAsset[]) => {
-      const existingAssetIndex = prevAssets.findIndex(asset => asset.ticker === newAsset.ticker);
-      if (existingAssetIndex > -1) {
-        // Asset exists, update its balance and value
-        const updatedAssets = [...prevAssets];
-        const existingAsset = updatedAssets[existingAssetIndex];
-        const updatedBalance = parseFloat(existingAsset.balance) + parseFloat(newAsset.balance);
-        const updatedValue = parseFloat(existingAsset.value) + parseFloat(newAsset.value);
-        updatedAssets[existingAssetIndex] = {
-          ...existingAsset,
-          balance: updatedBalance.toFixed(4),
-          value: updatedValue.toFixed(2),
-        };
-        return updatedAssets;
-      } else {
-        // Asset does not exist, add it
-        return [...prevAssets, newAsset];
-      }
+    
+    const assetUpdater = (prevAssets: WalletAsset[]) => {
+        const existingAssetIndex = prevAssets.findIndex(asset => asset.ticker === newAsset.ticker);
+        if (existingAssetIndex > -1) {
+            const updatedAssets = [...prevAssets];
+            const existingAsset = updatedAssets[existingAssetIndex];
+            const updatedBalance = parseFloat(existingAsset.balance) + parseFloat(newAsset.balance);
+            const updatedValue = parseFloat(existingAsset.value) + parseFloat(newAsset.value);
+            updatedAssets[existingAssetIndex] = {
+                ...existingAsset,
+                balance: updatedBalance.toFixed(4),
+                value: updatedValue.toFixed(2),
+            };
+            return updatedAssets;
+        } else {
+            return [...prevAssets, newAsset];
+        }
     };
 
     if (accountType === 'demo') {
-      setDemoAssets(updateAssets);
+        setDemoAssets(assetUpdater);
+        setDemoBalance(prev => prev - amount);
     } else {
-      setRealAssets(updateAssets);
+        setRealAssets(assetUpdater);
+        setRealBalance(prev => prev - amount);
     }
   };
 
+  const updateBalance = (accountType: 'demo' | 'real', pnl: number) => {
+    if (accountType === 'demo') {
+        setDemoBalance(prev => prev + pnl);
+    } else {
+        setRealBalance(prev => prev + pnl);
+    }
+  }
+
   return (
-    <WalletContext.Provider value={{ demoAssets, realAssets, addAsset }}>
+    <WalletContext.Provider value={{ demoAssets, realAssets, addAsset, demoBalance, realBalance, updateBalance }}>
       {children}
     </WalletContext.Provider>
   );
